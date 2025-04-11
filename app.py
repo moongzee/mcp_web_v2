@@ -34,7 +34,7 @@ class MCPAgent:
         prompt += f"User: {input_message}"
         
         if self.model == "claude":
-            response = anthropic_client.completions.create(
+            response = anthropic_client.messages.create(
                 model="claude-3-haiku-20240307",
                 max_tokens=500,
                 temperature=0.7,
