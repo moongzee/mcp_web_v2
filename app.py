@@ -75,25 +75,27 @@ def mcp_turn():
     gpt_role = data["gpt_role"]
     current_message = data["current_message"]
     current_speaker = data["current_speaker"]
-    
-    # 클라이언트에서 전달된 컨텍스트가 없으면 빈 리스트로 초기화
-    claude_context = data.get("claude_context", [])
-    gpt_context = data.get("gpt_context", [])
-    
-    # MCP 에이전트 생성 및 컨텍스트 복원
+
+    # 에이전트 생성
     claude_agent = MCPAgent("Claude", claude_role, "claude")
     gpt_agent = MCPAgent("GPT", gpt_role, "gpt")
-    claude_agent.context = claude_context
-    gpt_agent.context = gpt_context
-    
-    # 현재 턴의 주체에 따라 응답 생성
+
+    # 초기화 여부 판단
+    if data.get("reset"):
+        claude_agent.context = []
+        gpt_agent.context = []
+    else:
+        claude_agent.context = data.get("claude_context", [])
+        gpt_agent.context = data.get("gpt_context", [])
+
+    # 현재 턴 주체 처리
     if current_speaker == "claude":
         reply = claude_agent.respond(current_message)
         next_speaker = "gpt"
     else:
         reply = gpt_agent.respond(current_message)
         next_speaker = "claude"
-    
+
     return jsonify({
         "reply": reply,
         "current_message": reply,
@@ -101,6 +103,7 @@ def mcp_turn():
         "claude_context": claude_agent.context,
         "gpt_context": gpt_agent.context
     })
+
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

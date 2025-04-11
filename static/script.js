@@ -3,19 +3,25 @@ let currentSpeaker = "claude";
 let claudeContext = [];
 let gptContext = [];
 let autoTurnCount = 0;
-const maxAutoTurns = 10;  // 10턴 자동
+const maxAutoTurns = 10;
 let isAutoRunning = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("chatForm");
   const chatContainer = document.getElementById("chatContainer");
   const nextBtn = document.getElementById("nextBtn");
+  const startBtn = form.querySelector("button[type='submit']");
 
-  // 대화 시작 버튼 클릭 시
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 상태 초기화
+    if (isAutoRunning) {
+      isAutoRunning = false;
+      startBtn.textContent = "대화 시작";
+      return;
+    }
+
+    // 초기화
     chatContainer.innerHTML = "";
     const formData = new FormData(form);
     currentMessage = formData.get("start_message");
@@ -25,14 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
     autoTurnCount = 0;
     isAutoRunning = true;
 
-    // 더보기 버튼 숨김
+    startBtn.textContent = "대화 중지";
     nextBtn.style.display = "none";
 
-    // 10턴 자동 진행
+    await runInitialTwoTurns(formData);
     await autoTurn(formData);
+
+    if (!isAutoRunning) {
+      startBtn.textContent = "대화 시작";
+    }
   });
 
-  // 더보기 버튼 클릭: 추가로 10턴 진행
   nextBtn.addEventListener("click", async () => {
     const formData = new FormData(document.getElementById("chatForm"));
     autoTurnCount = 0;
@@ -41,23 +50,36 @@ document.addEventListener("DOMContentLoaded", () => {
     await autoTurn(formData);
   });
 
-  async function autoTurn(formData) {
-    while (isAutoRunning && autoTurnCount < maxAutoTurns) {
-      // 로딩 인디케이터 표시
-      showLoadingIndicator(chatContainer);
-      await fetchTurn(formData);
-      hideLoadingIndicator();
+  async function runInitialTwoTurns(formData) {
+    if (!isAutoRunning) return;
 
-      autoTurnCount++;
-      // 턴 사이 약간의 텀
-      await sleep(800);
-    }
-    isAutoRunning = false;
-    // 10턴 끝났다면 더보기 버튼 노출
-    nextBtn.style.display = "block";
+    showLoadingIndicator(chatContainer, currentSpeaker);
+    await fetchTurn(formData, true);  // reset true
+    hideLoadingIndicator();
+    await sleep(500);
+
+    if (!isAutoRunning) return;
+    showLoadingIndicator(chatContainer, currentSpeaker);
+    await fetchTurn(formData, false);
+    hideLoadingIndicator();
+    await sleep(500);
   }
 
-  async function fetchTurn(formData) {
+  async function autoTurn(formData) {
+    while (isAutoRunning && autoTurnCount < maxAutoTurns) {
+      showLoadingIndicator(chatContainer, currentSpeaker);
+      await fetchTurn(formData, false);
+      hideLoadingIndicator();
+      autoTurnCount++;
+      await sleep(800);
+    }
+
+    isAutoRunning = false;
+    nextBtn.style.display = "block";
+    startBtn.textContent = "대화 시작";
+  }
+
+  async function fetchTurn(formData, resetFlag) {
     const response = await fetch("/mcp-turn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,22 +89,20 @@ document.addEventListener("DOMContentLoaded", () => {
         current_message: currentMessage,
         current_speaker: currentSpeaker,
         claude_context: claudeContext,
-        gpt_context: gptContext
+        gpt_context: gptContext,
+        reset: resetFlag
       })
     });
+
     const data = await response.json();
     if (data.reply) {
-      // 말풍선 추가
       const bubble = document.createElement("div");
-      // 이번 턴 화자
       const speakerLabel = (currentSpeaker === "claude") ? "Claude" : "GPT";
-      // 카카오톡 테마: me, friend 구분
       bubble.className = "bubble " + (currentSpeaker === "claude" ? "friend" : "me");
       bubble.innerHTML = `<p class="speakerName">${speakerLabel}</p><p>${data.reply}</p>`;
       chatContainer.appendChild(bubble);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      // 상태 업데이트
       currentMessage = data.current_message;
       currentSpeaker = data.current_speaker;
       claudeContext = data.claude_context;
@@ -90,12 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function showLoadingIndicator(container) {
+  function showLoadingIndicator(container, speaker) {
     const loader = document.createElement("div");
     loader.id = "loaderDiv";
-    loader.className = "bubble loading me"; 
-    // 아래는 픽사베이 링크 (직접 다운로드 후 static/폴더에 저장 가능)
+    loader.className = "bubble loading " + (speaker === "claude" ? "friend" : "me");
     loader.innerHTML = `
+      <p class="speakerName">${speaker === "claude" ? "Claude" : "GPT"}</p>
       <img src="/static/load-32_128.gif"
            alt="로딩 중..." style="width:40px;height:40px;" />
     `;
