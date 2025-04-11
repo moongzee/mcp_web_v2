@@ -1,0 +1,127 @@
+/* 기본 바디 스타일: 화면 전체 사용 */
+body {
+    background-color: #f9f9f9;
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    margin: 30px;
+  }
+  
+  /* 제목 */
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+ /* 초기 설정 폼 */
+#chatForm {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 1300px;
+    margin-left: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .settings-col {
+    flex: 0 0 48%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .settings-full {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  
+  textarea, input[type="text"] {
+    padding: 9px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* 채팅창: 화면 가로폭 전부 사용, 높이는 화면에 맞게 설정 */
+  #chatContainer {
+    width: 90%;
+    height: calc(100vh - 240px);  /* 초기 설정폼 및 기타 요소를 고려해서 높이 조정 */
+    overflow-y: auto;
+    background-color: #bfdff1;
+    padding: 10px;
+    margin: 0 auto;  /* 중앙 정렬 */
+    border-radius: 10px;
+  }
+  
+  /* 말풍선 공통 스타일 (여백을 좀 더 늘림) */
+  .bubble {
+    max-width: 100%;
+    margin: 15px;  /* 기존 10px에서 15px로 확대 */
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    word-wrap: break-word;
+    display: block;
+  }
+  
+  /* 친구(Claude) 말풍선: 왼쪽 정렬 */
+  .friend {
+    background-color: #fff;
+    border: 1px solid #eee;
+    color: #333;
+    margin-left: 10px;
+    margin-right: auto;
+  }
+  
+  /* 왼쪽 꼬리(테일) 모양 */
+  .friend::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    border-width: 10px 10px 0 0;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+  }
+  
+  /* 나(GPT) 말풍선: 오른쪽 정렬 */
+  .me {
+    background-color: #ffeb33; /* 카카오톡 노란색 */
+    color: #000;
+    margin-left: auto;
+    margin-right: 10px;
+  }
+  
+  /* 오른쪽 꼬리(테일) 모양 */
+  .me::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: -10px;
+    border-width: 10px 0 0 10px;
+    border-style: solid;
+    border-color: #ffeb33 transparent transparent transparent;
+  }
+  
+  /* 말풍선 내 화자 이름 */
+  .speakerName {
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  
+  /* 로딩 인디케이터 버블 */
+  .loading {
+    opacity: 0.8;
+    text-align: center;
+  }
+  

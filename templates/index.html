@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>MCP 기반 대화</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+    <style>
+      /* 레이아웃 조정을 위한 인라인 스타일 */
+      .row {
+         display: flex;
+         flex-wrap: wrap;
+         width: 100%;
+         margin-bottom: 10px;
+      }
+      .col {
+         flex: 1;
+         padding: 5px;
+         box-sizing: border-box;
+      }
+      .full {
+         width: 100%;
+         padding: 5px;
+         box-sizing: border-box;
+      }
+      .inline-btn {
+         display: inline-block;
+         vertical-align: middle;
+         margin-left: 10px;
+         margin-top: 20px;
+      }
+      textarea {
+         width: 100%;
+         resize: vertical;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>MCP 기반 Claude와 GPT 대화</h2>
+    
+    <!-- 초기 설정 폼 -->
+    <form id="chatForm">
+      <!-- 첫 번째 행: Claude 역할과 GPT 역할 나란히 -->
+      <div class="row">
+        <div class="col">
+          <label for="claude_role">Claude 역할:</label>
+          <textarea id="claude_role" name="claude_role" rows="2">감성적인 시인이야</textarea>
+        </div>
+        <div class="col">
+          <label for="gpt_role">GPT 역할:</label>
+          <textarea id="gpt_role" name="gpt_role" rows="2">논리적인 공학자야</textarea>
+        </div>
+      </div>
+      <!-- 두 번째 행: 초기 메시지와 대화 시작 버튼 -->
+      <div class="row">
+        <div class="full">
+          <label for="start_message">초기 메시지:</label>
+          <textarea id="start_message" name="start_message" rows="2">너네 둘중 누가 더 똑똑해?</textarea>
+          <button type="submit" class="inline-btn">대화 시작</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- 채팅 내용 영역 -->
+    <div id="chatContainer"></div>
+
+    <!-- 더보기 버튼 (자동 10턴 진행 후 노출) -->
+    <button id="nextBtn" style="display: none;">더보기</button>
+  </body>
+</html>
