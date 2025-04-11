@@ -17,8 +17,8 @@ body {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    max-width: 1300px;
-    margin-left: 60px;
+    max-width: 1250px;
+    margin: 0 auto;
     margin-bottom: 20px;
   }
   
